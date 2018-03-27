@@ -13,7 +13,7 @@ const config = {
             host: 'mongodb://localhost:27017',
         },
     },
-    prod: {
+    production: {
         port: 3000,
         database: {
             name: 'mystique-prod',
