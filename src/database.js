@@ -15,7 +15,7 @@ module.exports = (() => {
                     callback();
                 }
             } catch (err) {
-                console.log(err);
+                throw new Error('Error at connected to database');
             }
         },
         connection: () => {
