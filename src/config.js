@@ -17,7 +17,7 @@ const config = {
         port: 3000,
         database: {
             name: 'mystique-prod',
-            host: 'mongodb://localhost:27017',
+            host: process.env.MONGODB_URI,
         },
     },
 };
