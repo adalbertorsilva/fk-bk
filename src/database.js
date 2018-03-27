@@ -9,8 +9,8 @@ module.exports = (() => {
     return {
         connect: async (callback) => {
             try {
-                const db = await MongoClient.connect(config.database.host);
-                _db = db.db(config.database.name);
+                const db = await MongoClient.connect(config.database);
+                _db = db.db();
                 if (callback) {
                     callback();
                 }
