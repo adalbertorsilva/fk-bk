@@ -1,15 +1,13 @@
 'use strict';
 
 const Koa = require('koa');
-const Router = require('koa-router');
+const bodyParser = require('koa-bodyparser');
+const projects = require('./projects/routes');
+
 
 const app = new Koa();
-const router = new Router();
 
-router.get('/', async (ctx) => {
-    ctx.body = 'Hello World';
-});
-
-app.use(router.routes());
+app.use(bodyParser());
+app.use(projects.routes());
 
 module.exports = app;
