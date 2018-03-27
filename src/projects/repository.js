@@ -9,5 +9,12 @@ module.exports = (db) => {
                 .insertOne(project)
                 .then((response) => response.ops[0]);
         },
+        all: () => {
+            return db
+                .connection()
+                .collection('projects')
+                .find({})
+                .toArray();
+        },
     };
 };
