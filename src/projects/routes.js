@@ -3,6 +3,7 @@ const database = require('../database');
 const repository = require('./repository')(database);
 const add = require('./add')(repository);
 const all = require('./all')(repository);
+const update = require('./update')(repository);
 const router = new Router();
 
 router
@@ -27,6 +28,18 @@ router
             .catch((err) => {
                 ctx.status = 500;
                 ctx.body = 'Error at create new project';
+            });
+    }).put('/projects/:id', (ctx, next) => {
+        const data = ctx.request.body;
+        const id = ctx.params.id;
+        return update(id, data)
+            .then((project) => {
+                ctx.status = 200;
+                ctx.body = data;
+            })
+            .catch((err) => {
+                console.log(err);
+                ctx.body = 'Error at update project';
             });
     });
 

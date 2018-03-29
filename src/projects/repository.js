@@ -1,5 +1,4 @@
 'use strict';
-
 module.exports = (db) => {
     return {
         add: (project) => {
@@ -15,6 +14,17 @@ module.exports = (db) => {
                 .collection('projects')
                 .find({})
                 .toArray();
+        },
+        update: (id, project) => {
+            return db
+                    .connection()
+                    .collection('projects')
+                    .findOneAndUpdate(
+                        {'_id': db.objectId(id)},
+                        {$set: project},
+                        {returnOriginal: false}
+                    )
+                    .then((result) => console.log(result));
         },
     };
 };

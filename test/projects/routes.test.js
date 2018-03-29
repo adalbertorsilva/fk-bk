@@ -3,13 +3,15 @@
 const request = require('supertest');
 const database = require('../../src/database');
 const app = require('../../src/app');
+let projects;
 
 beforeAll(async () => {
     await database.connect();
 });
 
 beforeEach(async () => {
-    await database.connection().collection('projects').remove({});
+    projects = database.connection().collection('projects');
+    await projects.remove({});
 });
 
 test('create a new project', () => {
@@ -28,8 +30,7 @@ test('create a new project', () => {
 });
 
 test('list all projects', () => {
-    return database.connection().collection('projects').insertMany([
-        {
+    return projects.insertMany([{
             name: 'foo 1',
             description: 'bar',
         },
@@ -46,6 +47,27 @@ test('list all projects', () => {
                 expect(res.body).toHaveLength(2);
             });
     });
+});
+
+test('update project', () => {
+    return projects.insertOne({
+            name: 'foo',
+            description: 'bar',
+        })
+        .then((result) => result.ops[0])
+        .then((result) => {
+            return request(app.callback())
+                .put('/projects/' + result._id)
+                .send({
+                    name: 'bar',
+                    description: 'foo',
+                })
+                .then((res) => {
+                    expect(res.status).toBe(200);
+                    expect(res.body).toHaveProperty('name', 'bar');
+                    expect(res.body).toFaveProperty('description', 'foo');
+                });
+        });
 });
 
 afterAll(() => {

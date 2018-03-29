@@ -1,6 +1,7 @@
 'use strict';
 
 const MongoClient = require('mongodb').MongoClient;
+const ObjectID = require('mongodb').ObjectID;
 const config = require('./config');
 
 module.exports = (() => {
@@ -23,6 +24,9 @@ module.exports = (() => {
         },
         close: () => {
             _db.close();
+        },
+        objectId: (id) => {
+            return new ObjectID(id);
         },
     };
 })();
