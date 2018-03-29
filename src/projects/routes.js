@@ -38,7 +38,6 @@ router
                 ctx.body = data;
             })
             .catch((err) => {
-                console.log(err);
                 ctx.body = 'Error at update project';
             });
     });

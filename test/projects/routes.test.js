@@ -65,7 +65,7 @@ test('update project', () => {
                 .then((res) => {
                     expect(res.status).toBe(200);
                     expect(res.body).toHaveProperty('name', 'bar');
-                    expect(res.body).toFaveProperty('description', 'foo');
+                    expect(res.body).toHaveProperty('description', 'foo');
                 });
         });
 });

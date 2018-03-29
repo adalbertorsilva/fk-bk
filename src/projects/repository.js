@@ -24,7 +24,7 @@ module.exports = (db) => {
                         {$set: project},
                         {returnOriginal: false}
                     )
-                    .then((result) => console.log(result));
+                    .then((result) => result.value);
         },
     };
 };
