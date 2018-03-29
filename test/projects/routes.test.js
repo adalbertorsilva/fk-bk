@@ -57,7 +57,7 @@ test('update project', () => {
         .then((result) => result.ops[0])
         .then((result) => {
             return request(app.callback())
-                .put('/projects/' + result._id)
+                .put(`/projects/${result._id}`)
                 .send({
                     name: 'bar',
                     description: 'foo',

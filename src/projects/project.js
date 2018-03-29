@@ -1,8 +1,12 @@
 'use strict';
 
-function Project({name, description}) {
-    this.name = name;
-    this.description = description;
-}
-
-module.exports = Project;
+module.exports = (() => {
+    return {
+        create: ({name, description}) => {
+            return {
+                name: name,
+                description: description,
+            };
+        },
+    };
+})();
