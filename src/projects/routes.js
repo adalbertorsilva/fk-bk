@@ -1,18 +1,15 @@
 const Router = require('koa-router');
 const database = require('../database');
-const repository = require('./repository')(database);
+const repository = require('./repository');
 const Add = require('./add');
 const All = require('./all');
 const Update = require('./update');
 const router = new Router();
 const [SUCCESS, ERROR] = ['SUCCESS', 'ERROR'];
 
-const add = new Add(repository);
-const all = new All(repository);
-const update = new Update(repository);
-
 router
     .get('/projects', async (ctx, next) => {
+        const all = new All(repository(database));
         all.on(SUCCESS, (projects) =>{
             ctx.status = 200;
             ctx.body = projects;
@@ -24,6 +21,7 @@ router
         await all.execute();
     })
     .post('/projects', async (ctx, next) => {
+        const add = new Add(repository(database));
         const data = ctx.request.body;
 
         add.on(SUCCESS, (project) =>{
@@ -37,6 +35,7 @@ router
         await add.execute(data);
     })
     .put('/projects/:id', async (ctx, next) => {
+        const update = new Update(repository(database));
         const data = ctx.request.body;
         const id = ctx.params.id;
 

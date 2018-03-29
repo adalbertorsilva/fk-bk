@@ -1,24 +1,22 @@
 'use strict';
 module.exports = (db) => {
+    const projectCollection = db
+            .connection()
+            .collection('projects');
+
     return {
         add: (project) => {
-            return db
-                .connection()
-                .collection('projects')
+            return projectCollection
                 .insertOne(project)
                 .then((response) => response.ops[0]);
         },
         all: () => {
-            return db
-                .connection()
-                .collection('projects')
+            return projectCollection
                 .find({})
                 .toArray();
         },
         update: (id, project) => {
-            return db
-                    .connection()
-                    .collection('projects')
+            return projectCollection
                     .findOneAndUpdate(
                         {'_id': db.objectId(id)},
                         {$set: project},
