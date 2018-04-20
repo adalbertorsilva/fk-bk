@@ -1,26 +1,32 @@
 'use strict';
 
 const EventEmitter = require('events').EventEmitter;
-const project = require('./project');
+const Project = require('./project');
+const Timestamp = require('../common/timestamp');
 
 const [SUCCESS, ERROR] = ['SUCCESS', 'ERROR'];
 
-function Update(repository) {
-    this.repository = repository;
+class UpdateProjectService extends EventEmitter {
+    constructor(repository) {
+        super();
+        this.repository = repository;
+    }
 
-    this.execute = (id, data) => {
-        return this.repository.update(id, project.create(data))
-            .then((project) => {
-                this.emit(SUCCESS, project);
-            })
-            .catch((err) => {
-                this.emit(ERROR, {
-                    error: err,
-                    message: 'Error to update project',
-                });
+    execute(id, data) {
+        const timestamp = new Timestamp(data.timestamp.createdAt, Date.now());
+        const project = new Project(data, timestamp);
+        return this.repository.update(id, project)
+        .then((project) => {
+            this.emit(SUCCESS, project);
+        })
+        .catch((err) => {
+            console.log(err);
+            this.emit(ERROR, {
+                error: err,
+                message: 'Error to update project',
             });
-    };
+        });
+    }
 }
 
-Update.prototype.__proto__ = EventEmitter.prototype;
-module.exports = Update;
+module.exports = UpdateProjectService;

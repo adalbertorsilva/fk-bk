@@ -28,5 +28,8 @@ module.exports = (() => {
         objectId: (id) => {
             return new ObjectID(id);
         },
+        collection: (name) => {
+            return _db.collection(name);
+        },
     };
 })();

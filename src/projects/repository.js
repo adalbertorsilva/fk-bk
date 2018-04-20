@@ -1,28 +1,30 @@
 'use strict';
-module.exports = (db) => {
-    const projectCollection = db
-            .connection()
-            .collection('projects');
 
+module.exports = (db) => {
     return {
         add: (project) => {
-            return projectCollection
+            delete project._id;
+            return db
+                .collection('projects')
                 .insertOne(project)
                 .then((response) => response.ops[0]);
         },
         all: () => {
-            return projectCollection
+            return db
+                .collection('projects')
                 .find({})
                 .toArray();
         },
         update: (id, project) => {
-            return projectCollection
-                    .findOneAndUpdate(
-                        {'_id': db.objectId(id)},
-                        {$set: project},
-                        {returnOriginal: false}
-                    )
-                    .then((result) => result.value);
+            delete project._id;
+            return db
+                .collection('projects')
+                .findOneAndUpdate(
+                    {'_id': db.objectId(id)},
+                    {$set: project},
+                    {returnOriginal: false}
+                )
+                .then((result) => result.value);
         },
     };
 };

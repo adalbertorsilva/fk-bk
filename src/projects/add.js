@@ -1,15 +1,18 @@
 'use strict';
 
 const EventEmitter = require('events').EventEmitter;
-const project = require('./project');
+const Project = require('./project');
 
 const [SUCCESS, ERROR] = ['SUCCESS', 'ERROR'];
 
-function Add(repository) {
-    this.repository = repository;
+class AddProjectService extends EventEmitter {
+    constructor(repository) {
+        super();
+        this.repository = repository;
+    }
 
-    this.execute = (data) => {
-        return this.repository.add(project.create(data))
+    execute(data) {
+        return this.repository.add(new Project(data))
             .then((project) => {
                 this.emit(SUCCESS, project);
             })
@@ -19,8 +22,7 @@ function Add(repository) {
                     message: 'Error to add new project',
                 });
             });
-    };
+    }
 }
 
-Add.prototype.__proto__ = EventEmitter.prototype;
-module.exports = Add;
+module.exports = AddProjectService;

@@ -26,6 +26,8 @@ test('create a new project', () => {
             expect(res.type).toBe('application/json');
             expect(res.body).toHaveProperty('name');
             expect(res.body).toHaveProperty('description');
+            expect(res.body.timestamp).toHaveProperty('createdAt');
+            expect(res.body.timestamp).toHaveProperty('updatedAt');
         });
 });
 
@@ -57,16 +59,22 @@ test('update project', () => {
         .then((result) => result.ops[0])
         .then((result) => {
             return request(app.callback())
-                .put(`/projects/${result._id}`)
-                .send({
-                    name: 'bar',
-                    description: 'foo',
-                })
-                .then((res) => {
-                    expect(res.status).toBe(200);
-                    expect(res.body).toHaveProperty('name', 'bar');
-                    expect(res.body).toHaveProperty('description', 'foo');
-                });
+            .put(`/projects/${result._id}`)
+            .send({
+                name: 'bar',
+                description: 'foo',
+                timestamp: {
+                    createAt: result.createdAt,
+                    updateAt: result.updatedAt,
+                },
+            })
+            .then((res) => {
+                expect(res.status).toBe(200);
+                expect(res.body).toHaveProperty('name', 'bar');
+                expect(res.body).toHaveProperty('description', 'foo');
+                expect(res.body.timestamp).toHaveProperty('createdAt');
+                expect(res.body.timestamp).toHaveProperty('updatedAt');
+            });
         });
 });
 
