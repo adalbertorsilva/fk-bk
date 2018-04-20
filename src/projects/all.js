@@ -10,7 +10,7 @@ class AllProjectService extends EventEmitter {
         this.repository = repository;
     }
 
-    execute(data) {
+    execute() {
         return this.repository.all()
             .then((projects) => {
                 this.emit(SUCCESS, projects);

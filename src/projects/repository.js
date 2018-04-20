@@ -26,5 +26,10 @@ module.exports = (db) => {
                 )
                 .then((result) => result.value);
         },
+        one: (id) => {
+            return db
+                .collection('projects')
+                .findOne({_id: db.objectId(id)});
+        },
     };
 };

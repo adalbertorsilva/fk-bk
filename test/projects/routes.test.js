@@ -14,7 +14,7 @@ beforeEach(async () => {
     await projects.remove({});
 });
 
-test('create a new project', () => {
+test('#POST create a new project', () => {
     return request(app.callback())
         .post('/projects')
         .send({
@@ -24,14 +24,14 @@ test('create a new project', () => {
         .then((res) => {
             expect(res.status).toBe(201);
             expect(res.type).toBe('application/json');
-            expect(res.body).toHaveProperty('name');
-            expect(res.body).toHaveProperty('description');
+            expect(res.body).toHaveProperty('name', 'foo project');
+            expect(res.body).toHaveProperty('description', 'bar description');
             expect(res.body.timestamp).toHaveProperty('createdAt');
             expect(res.body.timestamp).toHaveProperty('updatedAt');
         });
 });
 
-test('list all projects', () => {
+test('#GET list all projects', () => {
     return projects.insertMany([{
             name: 'foo 2',
             description: 'bar',
@@ -53,7 +53,7 @@ test('list all projects', () => {
     });
 });
 
-test('update project', () => {
+test('#PUT update project', () => {
     return projects.insertOne({
             name: 'foo',
             description: 'bar',
@@ -61,23 +61,60 @@ test('update project', () => {
         .then((result) => result.ops[0])
         .then((result) => {
             return request(app.callback())
-            .put(`/projects/${result._id}`)
-            .send({
-                name: 'bar',
-                description: 'foo',
-                timestamp: {
-                    createAt: result.createdAt,
-                    updateAt: result.updatedAt,
-                },
-            })
-            .then((res) => {
-                expect(res.status).toBe(200);
-                expect(res.body).toHaveProperty('name', 'bar');
-                expect(res.body).toHaveProperty('description', 'foo');
-                expect(res.body.timestamp).toHaveProperty('createdAt');
-                expect(res.body.timestamp).toHaveProperty('updatedAt');
-            });
+                .put(`/projects/${result._id}`)
+                .send({
+                    name: 'bar',
+                    description: 'foo',
+                    timestamp: {
+                        createAt: result.createdAt,
+                        updateAt: result.updatedAt,
+                    },
+                })
+                .then((res) => {
+                    expect(res.status).toBe(200);
+                    expect(res.body).toHaveProperty('name', 'bar');
+                    expect(res.body).toHaveProperty('description', 'foo');
+                    expect(res.body.timestamp).toHaveProperty('createdAt');
+                    expect(res.body.timestamp).toHaveProperty('updatedAt');
+                });
         });
+});
+
+test('#GET get a only project', () => {
+    return projects.insertOne({
+            name: 'foo',
+            description: 'bar',
+            timestamp: {
+                createdAt: Date.now(),
+                updatedAt: Date.now(),
+            },
+        })
+        .then((result) => result.ops[0])
+        .then((result) => {
+            return request(app.callback())
+                .get('/projects/' + result._id)
+                .then((res) => {
+                    expect(res.status).toBe(200);
+                    expect(res.type).toBe('application/json');
+                    expect(res.body).toHaveProperty('name', 'foo');
+                    expect(res.body).toHaveProperty('description', 'bar');
+                    expect(res.body.timestamp).toHaveProperty('createdAt');
+                    expect(res.body.timestamp).toHaveProperty('updatedAt');
+                });
+        });
+});
+
+test('#GET get project should return project not found', () => {
+    return request(app.callback())
+                .get('/projects/' + 123453123451)
+                .then((res) => {
+                    expect(res.status).toBe(404);
+                    expect(res.body)
+                        .toHaveProperty('message', 'Project not found');
+                    expect(res.body)
+                        .toHaveProperty('error',
+                         'Project with 123453123451 was not found');
+                });
 });
 
 afterAll(() => {
