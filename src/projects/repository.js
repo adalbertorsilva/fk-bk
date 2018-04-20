@@ -12,7 +12,7 @@ module.exports = (db) => {
         all: () => {
             return db
                 .collection('projects')
-                .find({})
+                .find({}).sort({name: 1})
                 .toArray();
         },
         update: (id, project) => {

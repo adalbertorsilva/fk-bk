@@ -4,10 +4,13 @@ const EventEmitter = require('events').EventEmitter;
 
 const [SUCCESS, ERROR] = ['SUCCESS', 'ERROR'];
 
-function All(repository) {
-    this.repository = repository;
+class AllProjectService extends EventEmitter {
+    constructor(repository) {
+        super();
+        this.repository = repository;
+    }
 
-    this.execute = () => {
+    execute(data) {
         return this.repository.all()
             .then((projects) => {
                 this.emit(SUCCESS, projects);
@@ -18,8 +21,8 @@ function All(repository) {
                     message: 'Error to list all projects',
                 });
             });
-    };
+    }
 }
 
-All.prototype.__proto__ = EventEmitter.prototype;
-module.exports = All;
+module.exports = AllProjectService;
+

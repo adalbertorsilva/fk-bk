@@ -33,11 +33,11 @@ test('create a new project', () => {
 
 test('list all projects', () => {
     return projects.insertMany([{
-            name: 'foo 1',
+            name: 'foo 2',
             description: 'bar',
         },
         {
-            name: 'foo 2',
+            name: 'foo 1',
             description: 'bar',
         },
     ]).then((result) => {
@@ -47,6 +47,8 @@ test('list all projects', () => {
                 expect(res.status).toBe(200);
                 expect(res.type).toBe('application/json');
                 expect(res.body).toHaveLength(2);
+                expect(res.body[0]).toHaveProperty('name', 'foo 1');
+                expect(res.body[1]).toHaveProperty('name', 'foo 2');
             });
     });
 });
