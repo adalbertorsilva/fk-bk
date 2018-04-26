@@ -10,6 +10,17 @@ class Project extends Entity {
         this.description = description;
         this.timestamp = timestamp;
     }
+
+    isValid() {
+        return this.name != null && this.name !== '' && this.name != undefined;
+    }
+
+    renewUpdatedAt() {
+        this.timestamp = new Timestamp({
+            createdAt: this.createdAt,
+            updatedAt: Date.now(),
+        });
+    }
 }
 
 module.exports = Project;

@@ -1,7 +1,6 @@
 'use strict';
 const Project = require('./project');
-const Timestamp = require('../common/timestamp');
-const [SUCCESS, ERROR, NOT_FOUND] = ['SUCCESS', 'ERROR', 'NOT_FOUND'];
+const [SUCCESS, ERROR] = ['SUCCESS', 'ERROR'];
 const error = require('./error');
 
 const all = (repository, event) => () => {
@@ -10,38 +9,44 @@ const all = (repository, event) => () => {
             event.emit(SUCCESS, projects);
         })
         .catch((err) => {
-            event.emit(ERROR, error.list(err));
+            event.emit(ERROR, error.list());
         });
 };
 
 const create = (repository, event) => (data) => {
-    return repository.add(new Project(data))
+    const project = new Project(data);
+    if (!project.isValid()) {
+        event.emit(ERROR, error.validation());
+        return;
+    }
+
+    return repository.add(project)
         .then((project) => {
             event.emit(SUCCESS, project);
         })
         .catch((err) => {
-            event.emit(ERROR, error.create(err));
+            event.emit(ERROR, error.create());
         });
 };
 
 const update = (repository, event) => (id, data) => {
-    const timestamp = new Timestamp({
-        createdAt: data.timestamp.createdAt,
-        updatedAt: Date.now(),
-    });
-    data.timestamp = timestamp;
     const project = new Project(data);
+    if (!project.isValid()) {
+        event.emit(ERROR, error.validation());
+        return;
+    }
 
+    project.renewUpdatedAt();
     return repository.update(id, project)
         .then((project) => {
             if (project == null) {
-                event.emit(NOT_FOUND, error.notFound(id));
+                event.emit(ERROR, error.notFound(id));
                 return;
             }
             event.emit(SUCCESS, project);
         })
         .catch((err) => {
-            event.emit(ERROR, error.update(err));
+            event.emit(ERROR, error.update());
         });
 };
 
@@ -49,13 +54,13 @@ const get = (repository, event) => (id) => {
     return repository.one(id)
         .then((project) => {
             if (project == null) {
-                event.emit(NOT_FOUND, error.notFound(id));
+                event.emit(ERROR, error.notFound(id));
                 return;
             }
             event.emit(SUCCESS, project);
         })
         .catch((err) => {
-            event.emit(ERROR, error.get(err));
+            event.emit(ERROR, error.get());
         });
 };
 

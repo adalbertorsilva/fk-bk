@@ -3,7 +3,7 @@ const EventEmitter = require('events').EventEmitter;
 const database = require('../database');
 const repository = require('./repository')(database);
 const {all, create, update, get} = require('./services');
-const [SUCCESS, ERROR, NOT_FOUND] = ['SUCCESS', 'ERROR', 'NOT_FOUND'];
+const [SUCCESS, ERROR] = ['SUCCESS', 'ERROR', 'NOT_FOUND'];
 const router = new Router();
 
 router
@@ -17,7 +17,7 @@ router
         });
 
         event.on(ERROR, (err) => {
-            ctx.status = 500;
+            ctx.status = err.code;
             ctx.body = err;
         });
 
@@ -33,7 +33,7 @@ router
         });
 
         event.on(ERROR, (err) => {
-            ctx.status = 500;
+            ctx.status = err.code;
             ctx.body = err;
         });
 
@@ -49,13 +49,8 @@ router
             ctx.body = project;
         });
 
-        event.on(NOT_FOUND, (err) => {
-            ctx.status = 404;
-            ctx.body = err;
-        });
-
         event.on(ERROR, (err) => {
-            ctx.status = 500;
+            ctx.status = err.code;
             ctx.body = err;
         });
 
@@ -72,13 +67,8 @@ router
             ctx.body = project;
         });
 
-        event.on(NOT_FOUND, (err) => {
-            ctx.status = 404;
-            ctx.body = err;
-        });
-
         event.on(ERROR, (err) => {
-            ctx.status = 500;
+            ctx.status = err.code;
             ctx.body = err;
         });
 

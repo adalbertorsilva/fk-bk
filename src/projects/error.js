@@ -2,37 +2,49 @@ module.exports = {
 
     notFound: (id) => {
         return {
-            error: `Project with ${id} was not found`,
-            message: 'Project not found',
+            code: 404,
+            error: 'Project not found',
+            message: `Project with ${id} was not found`,
         };
     },
 
-    list: (err) => {
+    list: () => {
         return {
-            error: err,
+            code: 500,
+            error: 'Server Error',
             message: 'Error to list all projects',
         };
     },
 
-    create: (err) => {
+    create: () => {
         return {
-            error: err,
+            code: 500,
+            error: 'Server Error',
             message: 'Error to add new project',
         };
     },
 
-    update: (err) => {
+    update: () => {
         return {
-            error: err,
+            code: 500,
+            error: 'Server Error',
             message: 'Error to update project',
         };
     },
 
-    get: (err) => {
+    get: () => {
         return {
-            error: err,
+            code: 500,
+            error: 'Server Error',
             message: 'Error to get project',
         };
     },
 
+    validation: () => {
+        return {
+            code: 403,
+            error: 'Validation error',
+            message: 'Your project must have a name',
+        };
+    },
 };

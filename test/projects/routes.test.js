@@ -31,6 +31,25 @@ test('#POST create a new project', () => {
         });
 });
 
+test('#POST create a new project should return validation error', () => {
+    return request(app.callback())
+        .post('/projects')
+        .send({
+            name: '',
+            description: 'bar description',
+        })
+        .then((res) => {
+            expect(res.status).toBe(403);
+            expect(res.body)
+                    .toHaveProperty('code', 403);
+            expect(res.body)
+                    .toHaveProperty('message', 'Your project must have a name');
+            expect(res.body)
+                    .toHaveProperty('error',
+                         'Validation error');
+        });
+});
+
 test('#GET list all projects', () => {
     return projects.insertMany([{
             name: 'foo 2',
@@ -80,6 +99,37 @@ test('#PUT update project', () => {
         });
 });
 
+test('#PUT update project should return validation error', () => {
+    return projects.insertOne({
+            name: 'foo',
+            description: 'bar',
+        })
+        .then((result) => result.ops[0])
+        .then((result) => {
+            return request(app.callback())
+                .put(`/projects/${result._id}`)
+                .send({
+                    name: '',
+                    description: 'foo',
+                    timestamp: {
+                        createAt: result.createdAt,
+                        updateAt: result.updatedAt,
+                    },
+                })
+                .then((res) => {
+                    expect(res.status).toBe(403);
+                    expect(res.body)
+                            .toHaveProperty('code', 403);
+                    expect(res.body)
+                            .toHaveProperty('message',
+                             'Your project must have a name');
+                    expect(res.body)
+                            .toHaveProperty('error',
+                                'Validation error');
+                });
+        });
+});
+
 test('#GET get a only project', () => {
     return projects.insertOne({
             name: 'foo',
@@ -110,39 +160,36 @@ test('#GET get project should return project not found', () => {
                 .then((res) => {
                     expect(res.status).toBe(404);
                     expect(res.body)
-                        .toHaveProperty('message', 'Project not found');
+                        .toHaveProperty('message',
+                         'Project with 123453123451 was not found');
                     expect(res.body)
                         .toHaveProperty('error',
-                         'Project with 123453123451 was not found');
+                         'Project not found');
                 });
 });
 
 test('#PUT update project should return not found', () => {
-    return projects.insertOne({
-            name: 'foo',
-            description: 'bar',
-        })
-        .then((result) => result.ops[0])
-        .then((result) => {
-            return request(app.callback())
+    return request(app.callback())
                 .put(`/projects/${123453123451}`)
                 .send({
                     name: 'bar',
                     description: 'foo',
                     timestamp: {
-                        createAt: result.createdAt,
-                        updateAt: result.updatedAt,
+                        createAt: Date.now(),
+                        updateAt: Date.now(),
                     },
                 })
                 .then((res) => {
                     expect(res.status).toBe(404);
                     expect(res.body)
-                        .toHaveProperty('message', 'Project not found');
+                    .toHaveProperty('code', 404);
+                    expect(res.body)
+                        .toHaveProperty('message',
+                        'Project with 123453123451 was not found');
                     expect(res.body)
                         .toHaveProperty('error',
-                         'Project with 123453123451 was not found');
+                         'Project not found');
                 });
-        });
 });
 
 afterAll(() => {
