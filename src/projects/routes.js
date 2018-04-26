@@ -49,6 +49,11 @@ router
             ctx.body = project;
         });
 
+        event.on(NOT_FOUND, (err) => {
+            ctx.status = 404;
+            ctx.body = err;
+        });
+
         event.on(ERROR, (err) => {
             ctx.status = 500;
             ctx.body = err;

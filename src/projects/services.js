@@ -2,6 +2,7 @@
 const Project = require('./project');
 const Timestamp = require('../common/timestamp');
 const [SUCCESS, ERROR, NOT_FOUND] = ['SUCCESS', 'ERROR', 'NOT_FOUND'];
+const error = require('./error');
 
 const all = (repository, event) => () => {
     return repository.all()
@@ -9,10 +10,7 @@ const all = (repository, event) => () => {
             event.emit(SUCCESS, projects);
         })
         .catch((err) => {
-            event.emit(ERROR, {
-                error: err,
-                message: 'Error to list all projects',
-            });
+            event.emit(ERROR, error.list(err));
         });
 };
 
@@ -22,10 +20,7 @@ const create = (repository, event) => (data) => {
             event.emit(SUCCESS, project);
         })
         .catch((err) => {
-            event.emit(ERROR, {
-                error: err,
-                message: 'Error to add new project',
-            });
+            event.emit(ERROR, error.create(err));
         });
 };
 
@@ -39,13 +34,14 @@ const update = (repository, event) => (id, data) => {
 
     return repository.update(id, project)
         .then((project) => {
+            if (project == null) {
+                event.emit(NOT_FOUND, error.notFound(id));
+                return;
+            }
             event.emit(SUCCESS, project);
         })
         .catch((err) => {
-            event.emit(ERROR, {
-                error: err,
-                message: 'Error to update project',
-            });
+            event.emit(ERROR, error.update(err));
         });
 };
 
@@ -53,19 +49,13 @@ const get = (repository, event) => (id) => {
     return repository.one(id)
         .then((project) => {
             if (project == null) {
-                event.emit(NOT_FOUND, {
-                    error: `Project with ${id} was not found`,
-                    message: 'Project not found',
-                });
+                event.emit(NOT_FOUND, error.notFound(id));
                 return;
             }
             event.emit(SUCCESS, project);
         })
         .catch((err) => {
-            event.emit(ERROR, {
-                error: err,
-                message: 'Error to get project',
-            });
+            event.emit(ERROR, error.get(err));
         });
 };
 

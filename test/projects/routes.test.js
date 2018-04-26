@@ -117,6 +117,34 @@ test('#GET get project should return project not found', () => {
                 });
 });
 
+test('#PUT update project should return not found', () => {
+    return projects.insertOne({
+            name: 'foo',
+            description: 'bar',
+        })
+        .then((result) => result.ops[0])
+        .then((result) => {
+            return request(app.callback())
+                .put(`/projects/${123453123451}`)
+                .send({
+                    name: 'bar',
+                    description: 'foo',
+                    timestamp: {
+                        createAt: result.createdAt,
+                        updateAt: result.updatedAt,
+                    },
+                })
+                .then((res) => {
+                    expect(res.status).toBe(404);
+                    expect(res.body)
+                        .toHaveProperty('message', 'Project not found');
+                    expect(res.body)
+                        .toHaveProperty('error',
+                         'Project with 123453123451 was not found');
+                });
+        });
+});
+
 afterAll(() => {
     database.close();
 });
