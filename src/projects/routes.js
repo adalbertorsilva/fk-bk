@@ -1,71 +1,84 @@
 const Router = require('koa-router');
+const EventEmitter = require('events').EventEmitter;
 const database = require('../database');
 const repository = require('./repository')(database);
-const Add = require('./add');
-const All = require('./all');
-const Update = require('./update');
-const Get = require('./get');
-const router = new Router();
+const {all, create, update, get} = require('./services');
 const [SUCCESS, ERROR, NOT_FOUND] = ['SUCCESS', 'ERROR', 'NOT_FOUND'];
+const router = new Router();
 
 router
     .get('/projects', async (ctx, next) => {
-        const all = new All(repository);
-        all.on(SUCCESS, (projects) =>{
+        const event = new EventEmitter();
+        const getAllProjects = all(repository, event);
+
+        event.on(SUCCESS, (projects) =>{
             ctx.status = 200;
             ctx.body = projects;
-        }).on(ERROR, (err) => {
+        });
+
+        event.on(ERROR, (err) => {
             ctx.status = 500;
             ctx.body = err;
         });
 
-        await all.execute();
+        await getAllProjects();
     })
     .post('/projects', async (ctx, next) => {
-        const add = new Add(repository);
-        const data = ctx.request.body;
+        const event = new EventEmitter();
+        const createProject = create(repository, event);
 
-        add.on(SUCCESS, (project) =>{
+        event.on(SUCCESS, (project) =>{
             ctx.status = 201;
             ctx.body = project;
-        }).on(ERROR, (err) => {
+        });
+
+        event.on(ERROR, (err) => {
             ctx.status = 500;
             ctx.body = err;
         });
 
-        await add.execute(data);
+        const data = ctx.request.body;
+        await createProject(data);
     })
     .put('/projects/:id', async (ctx, next) => {
-        const update = new Update(repository);
+        const event = new EventEmitter();
+        const updateProject = update(repository, event);
+
+        event.on(SUCCESS, (project) =>{
+            ctx.status = 200;
+            ctx.body = project;
+        });
+
+        event.on(ERROR, (err) => {
+            ctx.status = 500;
+            ctx.body = err;
+        });
+
         const data = ctx.request.body;
         const id = ctx.params.id;
-
-        update.on(SUCCESS, (project) =>{
-            ctx.status = 200;
-            ctx.body = project;
-        }).on(ERROR, (err) => {
-            ctx.status = 500;
-            ctx.body = err;
-        });
-
-        await update.execute(id, data);
+        await updateProject(id, data);
     })
     .get('/projects/:id', async (ctx, next) => {
-        const get = new Get(repository);
-        const id = ctx.params.id;
+        const event = new EventEmitter();
+        const getProject = get(repository, event);
 
-        get.on(SUCCESS, (project) =>{
+        event.on(SUCCESS, (project) =>{
             ctx.status = 200;
             ctx.body = project;
-        }).on(NOT_FOUND, (err) => {
+        });
+
+        event.on(NOT_FOUND, (err) => {
             ctx.status = 404;
             ctx.body = err;
-        }).on(ERROR, (err) => {
+        });
+
+        event.on(ERROR, (err) => {
             ctx.status = 500;
             ctx.body = err;
         });
 
-        await get.execute(id);
+        const id = ctx.params.id;
+        await getProject(id);
     });
 
 module.exports = router;
