@@ -2,7 +2,7 @@ const Router = require('koa-router');
 const EventEmitter = require('events').EventEmitter;
 const database = require('../database');
 const repository = require('./repository')(database);
-const {all, create, update, get} = require('./services');
+const {all, create, update, get, del} = require('./services');
 const [SUCCESS, ERROR] = ['SUCCESS', 'ERROR', 'NOT_FOUND'];
 const router = new Router();
 
@@ -74,6 +74,22 @@ router
 
         const id = ctx.params.id;
         await getProject(id);
+    })
+    .del('/projects/:id', async (ctx, next) => {
+        const event = new EventEmitter();
+        const deleteProject = del(repository, event);
+
+        event.on(SUCCESS, () =>{
+            ctx.status = 204;
+        });
+
+        event.on(ERROR, (err) => {
+            ctx.status = err.code;
+            ctx.body = err;
+        });
+
+        const id = ctx.params.id;
+        await deleteProject(id);
     });
 
 module.exports = router;

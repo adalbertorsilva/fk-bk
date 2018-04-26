@@ -3,6 +3,7 @@
 const request = require('supertest');
 const database = require('../../src/database');
 const app = require('../../src/app');
+const NOT_FOUND_ID = 123453123451;
 let projects;
 
 beforeAll(async () => {
@@ -156,12 +157,12 @@ test('#GET get a only project', () => {
 
 test('#GET get project should return project not found', () => {
     return request(app.callback())
-                .get('/projects/' + 123453123451)
+                .get('/projects/' + NOT_FOUND_ID)
                 .then((res) => {
                     expect(res.status).toBe(404);
                     expect(res.body)
                         .toHaveProperty('message',
-                         'Project with 123453123451 was not found');
+                         `Project with ${NOT_FOUND_ID} was not found`);
                     expect(res.body)
                         .toHaveProperty('error',
                          'Project not found');
@@ -170,7 +171,7 @@ test('#GET get project should return project not found', () => {
 
 test('#PUT update project should return not found', () => {
     return request(app.callback())
-                .put(`/projects/${123453123451}`)
+                .put(`/projects/${NOT_FOUND_ID}`)
                 .send({
                     name: 'bar',
                     description: 'foo',
@@ -185,7 +186,39 @@ test('#PUT update project should return not found', () => {
                     .toHaveProperty('code', 404);
                     expect(res.body)
                         .toHaveProperty('message',
-                        'Project with 123453123451 was not found');
+                        `Project with ${NOT_FOUND_ID} was not found`);
+                    expect(res.body)
+                        .toHaveProperty('error',
+                         'Project not found');
+                });
+});
+
+test('#DELETE remove a project', () => {
+    return projects.insertOne({
+            name: 'foo',
+            description: 'bar',
+        })
+        .then((result) => result.ops[0])
+        .then((result) => {
+            return request(app.callback())
+                .del(`/projects/${result._id}`)
+                .then((res) => {
+                    expect(res.status).toBe(204);
+                    expect(res.body).toMatchObject({});
+                });
+        });
+});
+
+test('#DELETE remove a project should return not nound', () => {
+    return request(app.callback())
+                .del(`/projects/${NOT_FOUND_ID}`)
+                .then((res) => {
+                    expect(res.status).toBe(404);
+                    expect(res.body)
+                    .toHaveProperty('code', 404);
+                    expect(res.body)
+                        .toHaveProperty('message',
+                        `Project with ${NOT_FOUND_ID} was not found`);
                     expect(res.body)
                         .toHaveProperty('error',
                          'Project not found');

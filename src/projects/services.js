@@ -64,9 +64,24 @@ const get = (repository, event) => (id) => {
         });
 };
 
+const del = (repository, event) => (id) => {
+    return repository.del(id)
+        .then((success) => {
+            if (!success) {
+                event.emit(ERROR, error.notFound(id));
+                return;
+            }
+            event.emit(SUCCESS);
+        })
+        .catch((err) => {
+            event.emit(ERROR, error.del());
+        });
+};
+
 module.exports = {
     all: all,
     create: create,
     update: update,
     get: get,
+    del: del,
 };

@@ -31,5 +31,11 @@ module.exports = (db) => {
                 .collection('projects')
                 .findOne({_id: db.objectId(id)});
         },
+        del: (id) => {
+            return db
+                .collection('projects')
+                .remove({_id: db.objectId(id)})
+                .then((result) => result.result.n);
+        },
     };
 };

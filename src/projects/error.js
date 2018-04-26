@@ -40,6 +40,14 @@ module.exports = {
         };
     },
 
+    del: () => {
+        return {
+            code: 500,
+            error: 'Server Error',
+            message: 'Error to remove a project',
+        };
+    },
+
     validation: () => {
         return {
             code: 403,
