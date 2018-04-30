@@ -52,7 +52,8 @@ module.exports = {
         return {
             code: 403,
             error: 'Validation error',
-            message: 'Your project must have a name',
+            message: 'Your project must have a name and you should '+
+                     'follow this pattern to your base url any/any/',
         };
     },
 };

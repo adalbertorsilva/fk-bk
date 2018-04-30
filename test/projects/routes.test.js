@@ -20,13 +20,13 @@ test('#POST create a new project', () => {
         .post('/projects')
         .send({
             name: 'foo project',
-            baseUrl: 'foo',
+            baseUrl: 'foo/',
         })
         .then((res) => {
             expect(res.status).toBe(201);
             expect(res.type).toBe('application/json');
             expect(res.body).toHaveProperty('name', 'foo project');
-            expect(res.body.baseUrl).toMatch(/^https:\/\/\d*\/foo\/$/);
+            expect(res.body.baseUrl).toMatch(/^((\d|\w)+\/)+$/);
             expect(res.body.timestamp).toHaveProperty('createdAt');
             expect(res.body.timestamp).toHaveProperty('updatedAt');
         });
@@ -36,15 +36,17 @@ test('#POST create a new project should return validation error', () => {
     return request(app.callback())
         .post('/projects')
         .send({
-            name: '',
-            baseUrl: 'bar baseUrl',
+            name: 'the name',
+            baseUrl: 'bar//',
         })
         .then((res) => {
             expect(res.status).toBe(403);
             expect(res.body)
                     .toHaveProperty('code', 403);
             expect(res.body)
-                    .toHaveProperty('message', 'Your project must have a name');
+                    .toHaveProperty('message',
+                        'Your project must have a name and you should ' +
+                        'follow this pattern to your base url any/any/');
             expect(res.body)
                     .toHaveProperty('error',
                          'Validation error');
@@ -85,7 +87,7 @@ test('#PUT update project', () => {
                 .put(`/projects/${id}`)
                 .send({
                     name: 'bar',
-                    baseUrl: 'foo',
+                    baseUrl: 'foo/',
                     timestamp: {
                         createAt: result.createdAt,
                         updateAt: result.updatedAt,
@@ -94,7 +96,7 @@ test('#PUT update project', () => {
                 .then((res) => {
                     expect(res.status).toBe(200);
                     expect(res.body).toHaveProperty('name', 'bar');
-                    expect(res.body.baseUrl).toMatch(/^https:\/\/\d*\/foo\/$/);
+                    expect(res.body.baseUrl).toMatch(/^((\d|\w)+\/)+$/);
                     expect(res.body.timestamp).toHaveProperty('createdAt');
                     expect(res.body.timestamp).toHaveProperty('updatedAt');
                 });
@@ -104,7 +106,7 @@ test('#PUT update project', () => {
 test('#PUT update project should return validation error', () => {
     return projects.insertOne({
             name: 'foo',
-            baseUrl: 'bar',
+            baseUrl: 'bar/',
         })
         .then((result) => result.ops[0])
         .then((result) => {
@@ -112,7 +114,7 @@ test('#PUT update project should return validation error', () => {
                 .put(`/projects/${result._id}`)
                 .send({
                     name: '',
-                    baseUrl: 'foo',
+                    baseUrl: 'foo/',
                     timestamp: {
                         createAt: result.createdAt,
                         updateAt: result.updatedAt,
@@ -124,7 +126,8 @@ test('#PUT update project should return validation error', () => {
                             .toHaveProperty('code', 403);
                     expect(res.body)
                             .toHaveProperty('message',
-                             'Your project must have a name');
+                             'Your project must have a name and you should ' +
+                             'follow this pattern to your base url any/any/');
                     expect(res.body)
                             .toHaveProperty('error',
                                 'Validation error');
@@ -175,7 +178,7 @@ test('#PUT update project should return not found', () => {
                 .put(`/projects/${NOT_FOUND_ID}`)
                 .send({
                     name: 'bar',
-                    baseUrl: 'foo',
+                    baseUrl: 'foo/',
                     timestamp: {
                         createAt: Date.now(),
                         updateAt: Date.now(),
