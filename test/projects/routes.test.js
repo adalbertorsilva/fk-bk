@@ -20,13 +20,13 @@ test('#POST create a new project', () => {
         .post('/projects')
         .send({
             name: 'foo project',
-            description: 'bar description',
+            baseUrl: 'foo',
         })
         .then((res) => {
             expect(res.status).toBe(201);
             expect(res.type).toBe('application/json');
             expect(res.body).toHaveProperty('name', 'foo project');
-            expect(res.body).toHaveProperty('description', 'bar description');
+            expect(res.body.baseUrl).toMatch(/^https:\/\/\d*\/foo\/$/);
             expect(res.body.timestamp).toHaveProperty('createdAt');
             expect(res.body.timestamp).toHaveProperty('updatedAt');
         });
@@ -37,7 +37,7 @@ test('#POST create a new project should return validation error', () => {
         .post('/projects')
         .send({
             name: '',
-            description: 'bar description',
+            baseUrl: 'bar baseUrl',
         })
         .then((res) => {
             expect(res.status).toBe(403);
@@ -54,11 +54,11 @@ test('#POST create a new project should return validation error', () => {
 test('#GET list all projects', () => {
     return projects.insertMany([{
             name: 'foo 2',
-            description: 'bar',
+            baseUrl: 'bar',
         },
         {
             name: 'foo 1',
-            description: 'bar',
+            baseUrl: 'bar',
         },
     ]).then((result) => {
         return request(app.callback())
@@ -76,15 +76,16 @@ test('#GET list all projects', () => {
 test('#PUT update project', () => {
     return projects.insertOne({
             name: 'foo',
-            description: 'bar',
+            baseUrl: 'bar',
         })
         .then((result) => result.ops[0])
         .then((result) => {
+            const id = result._id;
             return request(app.callback())
-                .put(`/projects/${result._id}`)
+                .put(`/projects/${id}`)
                 .send({
                     name: 'bar',
-                    description: 'foo',
+                    baseUrl: 'foo',
                     timestamp: {
                         createAt: result.createdAt,
                         updateAt: result.updatedAt,
@@ -93,7 +94,7 @@ test('#PUT update project', () => {
                 .then((res) => {
                     expect(res.status).toBe(200);
                     expect(res.body).toHaveProperty('name', 'bar');
-                    expect(res.body).toHaveProperty('description', 'foo');
+                    expect(res.body.baseUrl).toMatch(/^https:\/\/\d*\/foo\/$/);
                     expect(res.body.timestamp).toHaveProperty('createdAt');
                     expect(res.body.timestamp).toHaveProperty('updatedAt');
                 });
@@ -103,7 +104,7 @@ test('#PUT update project', () => {
 test('#PUT update project should return validation error', () => {
     return projects.insertOne({
             name: 'foo',
-            description: 'bar',
+            baseUrl: 'bar',
         })
         .then((result) => result.ops[0])
         .then((result) => {
@@ -111,7 +112,7 @@ test('#PUT update project should return validation error', () => {
                 .put(`/projects/${result._id}`)
                 .send({
                     name: '',
-                    description: 'foo',
+                    baseUrl: 'foo',
                     timestamp: {
                         createAt: result.createdAt,
                         updateAt: result.updatedAt,
@@ -134,7 +135,7 @@ test('#PUT update project should return validation error', () => {
 test('#GET get a only project', () => {
     return projects.insertOne({
             name: 'foo',
-            description: 'bar',
+            baseUrl: 'bar',
             timestamp: {
                 createdAt: Date.now(),
                 updatedAt: Date.now(),
@@ -148,7 +149,7 @@ test('#GET get a only project', () => {
                     expect(res.status).toBe(200);
                     expect(res.type).toBe('application/json');
                     expect(res.body).toHaveProperty('name', 'foo');
-                    expect(res.body).toHaveProperty('description', 'bar');
+                    expect(res.body).toHaveProperty('baseUrl', 'bar');
                     expect(res.body.timestamp).toHaveProperty('createdAt');
                     expect(res.body.timestamp).toHaveProperty('updatedAt');
                 });
@@ -174,7 +175,7 @@ test('#PUT update project should return not found', () => {
                 .put(`/projects/${NOT_FOUND_ID}`)
                 .send({
                     name: 'bar',
-                    description: 'foo',
+                    baseUrl: 'foo',
                     timestamp: {
                         createAt: Date.now(),
                         updateAt: Date.now(),
@@ -196,7 +197,7 @@ test('#PUT update project should return not found', () => {
 test('#DELETE remove a project', () => {
     return projects.insertOne({
             name: 'foo',
-            description: 'bar',
+            baseUrl: 'bar',
         })
         .then((result) => result.ops[0])
         .then((result) => {

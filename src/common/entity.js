@@ -1,8 +1,8 @@
 'use strict';
 
 class Entity {
-    constructor() {
-        this._id = 0;
+    constructor(_id = 0) {
+        this._id = _id;
     }
 
     equals(entity) {

@@ -1,12 +1,20 @@
 'use strict';
 
 module.exports = (db) => {
+    function toDatabase({name, baseUrl, timestamp}) {
+        return {
+            name: name,
+            baseUrl: baseUrl.baseUrl,
+            timestamp: timestamp,
+        };
+    }
+
     return {
         add: (project) => {
             delete project._id;
             return db
                 .collection('projects')
-                .insertOne(project)
+                .insertOne(toDatabase(project))
                 .then((response) => response.ops[0]);
         },
         all: () => {
@@ -21,7 +29,7 @@ module.exports = (db) => {
                 .collection('projects')
                 .findOneAndUpdate(
                     {'_id': db.objectId(id)},
-                    {$set: project},
+                    {$set: toDatabase(project)},
                     {returnOriginal: false}
                 )
                 .then((result) => result.value);

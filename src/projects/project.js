@@ -2,12 +2,13 @@
 
 const Entity = require('../common/entity');
 const Timestamp = require('../common/timestamp');
+const BaseUrl = require('../common/base-url');
 
 class Project extends Entity {
-    constructor({name, description}, timestamp = new Timestamp()) {
-        super();
+    constructor({_id, name, baseUrl}, timestamp = new Timestamp()) {
+        super(_id);
         this.name = name;
-        this.description = description;
+        this.baseUrl = new BaseUrl('https', `${Date.now()}/${baseUrl}`);
         this.timestamp = timestamp;
     }
 
