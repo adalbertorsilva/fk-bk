@@ -3,6 +3,7 @@
 const Entity = require('../common/entity');
 const Timestamp = require('../common/timestamp');
 const Email = require('../common/email');
+const {isNotEmpty} = require('../common/validation');
 
 class User extends Entity {
     constructor({_id, username, email, password}, timestamp = new Timestamp()) {
@@ -14,13 +15,9 @@ class User extends Entity {
     }
 
     isValid() {
-        return this.username != null
-            && this.username !== ''
-            && this.username != undefined
+        return isNotEmpty(this.username)
             && this.email.isValid()
-            && this.password != null
-            && this.password !== ''
-            && this.password != undefined;
+            && isNotEmpty(this.password);
     }
 }
 

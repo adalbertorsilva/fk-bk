@@ -5,7 +5,7 @@ const database = require('../../src/database');
 const app = require('../../src/app');
 let users;
 
-const EMAIL_PATTERN = /^[a-z0-9]+\@[a-z0-9]+\.[a-z]+(\.[a-z]+)?$/;
+const EMAIL_PATTERN = /^(\d|\w|\.|-|_)+\@[a-z0-9]+\.[a-z]+(\.[a-z]+)?$/;
 
 beforeAll(async () => {
     await database.connect();

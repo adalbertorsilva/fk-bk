@@ -1,7 +1,7 @@
 'use strict';
 
 
-const PATTERN = /^[a-z0-9]+\@[a-z0-9]+\.[a-z]+(\.[a-z]+)?$/;
+const PATTERN = /^(\d|\w|\.|-|_)+\@[a-z0-9]+\.[a-z]+(\.[a-z]+)?$/;
 
 class Email {
     constructor(email) {
