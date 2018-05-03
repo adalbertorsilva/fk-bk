@@ -15,6 +15,15 @@ module.exports = {
         };
     },
 
+    loginValidation: () => {
+        return {
+            code: 403,
+            error: 'Validation error',
+            message: 'Email and password is required',
+        };
+    },
+
+
     notFound: () => {
         return {
             code: 404,

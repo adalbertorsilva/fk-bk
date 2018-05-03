@@ -80,6 +80,23 @@ test('#POST should return user not found', () => {
         });
 });
 
+test('#POST should return validation error', () => {
+    return request(app.callback())
+        .post('/login')
+        .send({
+            email: '',
+            password: '',
+        })
+        .then((res) => {
+            expect(res.status).toBe(403);
+            expect(res.type).toBe('application/json');
+            expect(res.body).toHaveProperty('code', 403);
+            expect(res.body).toHaveProperty('error', 'Validation error');
+            expect(res.body).toHaveProperty('message', 'Email and password is required');
+        });
+});
+
+
 afterAll(() => {
     testCase.finished();
 });
