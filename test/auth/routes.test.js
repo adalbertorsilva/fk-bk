@@ -92,7 +92,8 @@ test('#POST should return validation error', () => {
             expect(res.type).toBe('application/json');
             expect(res.body).toHaveProperty('code', 403);
             expect(res.body).toHaveProperty('error', 'Validation error');
-            expect(res.body).toHaveProperty('message', 'Email and password is required');
+            expect(res.body).toHaveProperty('message',
+             'Email and password is required');
         });
 });
 
