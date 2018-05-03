@@ -64,6 +64,22 @@ test('#POST should return valid jwt token', () => {
     });
 });
 
+test('#POST should return user not found', () => {
+    return request(app.callback())
+        .post('/login')
+        .send({
+            email: 'foo@bar.com',
+            password: 'secret_key',
+        })
+        .then((res) => {
+            expect(res.status).toBe(404);
+            expect(res.type).toBe('application/json');
+            expect(res.body).toHaveProperty('code', 404);
+            expect(res.body).toHaveProperty('error', 'Not Found');
+            expect(res.body).toHaveProperty('message', 'User not found');
+        });
+});
+
 afterAll(() => {
     testCase.finished();
 });

@@ -24,6 +24,11 @@ const register = (repository, event) => (data) => {
 const login = (repository, event) => (email, password) => {
     return repository.findByEmailAndPassword(email, password)
         .then((user) => {
+            if (!user) {
+                event.emit(ERROR, error.notFound());
+                return;
+            }
+
             const payload = {_id: user._id};
             event.emit(SUCCESS, {
                 token: jwt.encode(payload, config.jwtSecret),

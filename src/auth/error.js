@@ -14,4 +14,12 @@ module.exports = {
             message: 'username, email and password is required',
         };
     },
+
+    notFound: () => {
+        return {
+            code: 404,
+            error: 'Not Found',
+            message: 'User not found',
+        };
+    },
 };
