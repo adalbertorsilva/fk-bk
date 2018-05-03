@@ -1,3 +1,5 @@
+sudo: required
+
 language: node_js
 node_js:
   - "9.5.0"
@@ -5,10 +7,14 @@ addons:
   code_climate:
       repo_token:
         secure: "x3AEBcP7huP4Nmytws956WXJOe1DCOpV8aVVukeI/Yydm6IHaiZhCodPRFumTbxwDU1wmeg+Vb2W1A45LUegrFQg07a9wJPiezVjtiIAeY+AXEzlfUxystY76zKSqTvmapoGtvWQaZ/l1N/Gl5ykkkJNcGN8PKKpfjlGZUsck1w9wZCp1+xT6xaiBht48qEMRqJQTL/mvDIT7RrFVHAJueCPkKRdQ3Tg8gxgcpHmg6WAQZHWOXp+jktVO+oP3FCSY548Zt+EwxTU9XBtsCQoGPNjxnJmw4fDk4JQN7pfoJP+uJkaGLQaK1LuGPb62+5PwNv/x15UPHQA8iJ/2/znICegb1MFZMZcFBqsPMfTuW1SxuOiTa0sFvMTPUliyd2Ftq6VjTv0hZW3saUZumVDXw2FSJtNSTv8zxGMWu6xp/1xPqznPkk0bKxQ+OfgqZOcvvlJKz35npam6YhjAt//b3XbJG3oUfQHFAJAojFWzM2h+nfXiLIyvbKa/jyQmOC6NG9oeohy+F2bNUjWuj/mtRDOn4lGwWViPaSifvC0PbM/i2sZqOaLZoXIjyKi12TaKImU3rP9f09wP8Vep2yAUbfoQIBcrEJVnNUbMPrU5mZvfTfnUoVujvSXEDmpi8C82m/j6XTAIMUFx3GS4zoa7Cj7Jt+5LvAPFGcBOsjhqyM="
-services: mongodb
-script: npm run test-cvg
-before_script:
-  - npm install
-  - npm install codeclimate-test-reporter istanbul -g
+
+services:
+  - docker
+
+before_install:
+  - docker-compose run npm install codeclimate-test-reporter istanbul -g -c
+
+script: docker-compose run npm run test-cvg -c
+
 after_script:
-  - codeclimate-test-reporter < ./coverage/lcov.info
+  - docker-compose run codeclimate-test-reporter < ./coverage/lcov.info
