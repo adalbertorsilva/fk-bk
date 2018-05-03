@@ -1,19 +1,17 @@
 'use strict';
 
-const request = require('supertest');
-const database = require('../../src/database');
-const app = require('../../src/app');
-let users;
-
 const EMAIL_PATTERN = /^(\d|\w|\.|-|_)+\@[a-z0-9]+\.[a-z]+(\.[a-z]+)?$/;
 
+const request = require('supertest');
+const testCase = require('../test-case');
+const app = require('../../src/app');
+
 beforeAll(async () => {
-    await database.connect();
+    await testCase.init();
 });
 
 beforeEach(async () => {
-    users = database.connection().collection('users');
-    await users.remove({});
+    await testCase.clear('users');
 });
 
 test('#POST create a new user', () => {
@@ -53,6 +51,19 @@ test('#POST invalid user should return error validation', () => {
         });
 });
 
+test('#POST should return valid jwt token', () => {
+    return testCase.makeJwtToken().then((jwtToken) => {
+        return request(app.callback())
+            .post('/login')
+            .send(testCase.authUser())
+            .then((res) => {
+                expect(res.status).toBe(200);
+                expect(res.type).toBe('application/json');
+                expect(res.body).toHaveProperty('token', jwtToken.slice(7));
+            });
+    });
+});
+
 afterAll(() => {
-    database.close();
+    testCase.finished();
 });

@@ -1,7 +1,9 @@
 'use strict';
+const jwt = require('jwt-simple');
+const config = require('../config');
 const User = require('./user');
-const [SUCCESS, ERROR] = ['SUCCESS', 'ERROR'];
 const error = require('./error');
+const [SUCCESS, ERROR] = ['SUCCESS', 'ERROR'];
 
 const register = (repository, event) => (data) => {
     const user = new User(data);
@@ -19,6 +21,21 @@ const register = (repository, event) => (data) => {
         });
 };
 
+const login = (repository, event) => (email, password) => {
+    return repository.findByEmailAndPassword(email, password)
+        .then((user) => {
+            const payload = {_id: user._id};
+            event.emit(SUCCESS, {
+                token: jwt.encode(payload, config.jwtSecret),
+            });
+        })
+        .catch((err) => {
+            console.log(err);
+            event.emit(ERROR, error.register());
+        });
+};
+
 module.exports = {
+    login: login,
     register: register,
 };

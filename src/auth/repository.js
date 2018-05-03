@@ -18,5 +18,15 @@ module.exports = (db) => {
                 .insertOne(toDatabase(user))
                 .then((response) => response.ops[0]);
         },
+        one: (id) => {
+            return db
+                .collection('users')
+                .findOne({_id: db.objectId(id)});
+        },
+        findByEmailAndPassword: (email, password) => {
+            return db
+                .collection('users')
+                .findOne({email: email, password: password});
+        },
     };
 };

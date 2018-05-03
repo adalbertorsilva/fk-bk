@@ -1,40 +1,46 @@
 'use strict';
 
-const request = require('supertest');
-const database = require('../../src/database');
-const app = require('../../src/app');
 const NOT_FOUND_ID = 123453123451;
+
+const request = require('supertest');
+const app = require('../../src/app');
+const testCase = require('../test-case');
+
 let projects;
+let token;
 
 beforeAll(async () => {
-    await database.connect();
+    await testCase.init();
+    token = await testCase.makeJwtToken();
 });
 
 beforeEach(async () => {
-    projects = database.connection().collection('projects');
-    await projects.remove({});
+    projects = testCase.makeModel('projects');
+    await testCase.clear('projects');
 });
 
 test('#POST create a new project', () => {
     return request(app.callback())
-        .post('/projects')
-        .send({
-            name: 'foo project',
-            baseUrl: 'foo/',
-        })
-        .then((res) => {
-            expect(res.status).toBe(201);
-            expect(res.type).toBe('application/json');
-            expect(res.body).toHaveProperty('name', 'foo project');
-            expect(res.body.baseUrl).toMatch(/^((\d|\w)+\/)+$/);
-            expect(res.body.timestamp).toHaveProperty('createdAt');
-            expect(res.body.timestamp).toHaveProperty('updatedAt');
-        });
+            .post('/projects')
+            .set('Authorization', token)
+            .send({
+                name: 'foo project',
+                baseUrl: 'foo/',
+            })
+            .then((res) => {
+                expect(res.status).toBe(201);
+                expect(res.type).toBe('application/json');
+                expect(res.body).toHaveProperty('name', 'foo project');
+                expect(res.body.baseUrl).toMatch(/^((\d|\w)+\/)+$/);
+                expect(res.body.timestamp).toHaveProperty('createdAt');
+                expect(res.body.timestamp).toHaveProperty('updatedAt');
+            });
 });
 
 test('#POST create a new project should return validation error', () => {
     return request(app.callback())
         .post('/projects')
+        .set('Authorization', token)
         .send({
             name: 'the name',
             baseUrl: 'bar//',
@@ -65,6 +71,7 @@ test('#GET list all projects', () => {
     ]).then((result) => {
         return request(app.callback())
             .get('/projects')
+            .set('Authorization', token)
             .then((res) => {
                 expect(res.status).toBe(200);
                 expect(res.type).toBe('application/json');
@@ -85,6 +92,7 @@ test('#PUT update project', () => {
             const id = result._id;
             return request(app.callback())
                 .put(`/projects/${id}`)
+                .set('Authorization', token)
                 .send({
                     name: 'bar',
                     baseUrl: 'foo/',
@@ -112,6 +120,7 @@ test('#PUT update project should return validation error', () => {
         .then((result) => {
             return request(app.callback())
                 .put(`/projects/${result._id}`)
+                .set('Authorization', token)
                 .send({
                     name: '',
                     baseUrl: 'foo/',
@@ -148,6 +157,7 @@ test('#GET get a only project', () => {
         .then((result) => {
             return request(app.callback())
                 .get('/projects/' + result._id)
+                .set('Authorization', token)
                 .then((res) => {
                     expect(res.status).toBe(200);
                     expect(res.type).toBe('application/json');
@@ -162,6 +172,7 @@ test('#GET get a only project', () => {
 test('#GET get project should return project not found', () => {
     return request(app.callback())
                 .get('/projects/' + NOT_FOUND_ID)
+                .set('Authorization', token)
                 .then((res) => {
                     expect(res.status).toBe(404);
                     expect(res.body)
@@ -176,6 +187,7 @@ test('#GET get project should return project not found', () => {
 test('#PUT update project should return not found', () => {
     return request(app.callback())
                 .put(`/projects/${NOT_FOUND_ID}`)
+                .set('Authorization', token)
                 .send({
                     name: 'bar',
                     baseUrl: 'foo/',
@@ -206,6 +218,7 @@ test('#DELETE remove a project', () => {
         .then((result) => {
             return request(app.callback())
                 .del(`/projects/${result._id}`)
+                .set('Authorization', token)
                 .then((res) => {
                     expect(res.status).toBe(204);
                     expect(res.body).toMatchObject({});
@@ -216,6 +229,7 @@ test('#DELETE remove a project', () => {
 test('#DELETE remove a project should return not nound', () => {
     return request(app.callback())
                 .del(`/projects/${NOT_FOUND_ID}`)
+                .set('Authorization', token)
                 .then((res) => {
                     expect(res.status).toBe(404);
                     expect(res.body)
@@ -230,5 +244,5 @@ test('#DELETE remove a project should return not nound', () => {
 });
 
 afterAll(() => {
-    database.close();
+    return setup.finished();
 });
