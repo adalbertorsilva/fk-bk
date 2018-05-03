@@ -12,7 +12,6 @@ let token;
 beforeAll(async () => {
     await testCase.init();
     token = await testCase.makeJwtToken();
-    console.log(token);
 });
 
 beforeEach(async () => {
