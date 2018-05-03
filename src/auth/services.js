@@ -2,8 +2,7 @@
 const jwt = require('jwt-simple');
 const config = require('../config');
 const User = require('./user');
-const Email = require('../common/email');
-const {isEmpty} = require('../common/validation');
+const {isEmpty, isValidEmail} = require('../common/validation');
 const error = require('./error');
 const [SUCCESS, ERROR] = ['SUCCESS', 'ERROR'];
 
@@ -24,7 +23,7 @@ const register = (repository, event) => (data) => {
 };
 
 const login = (repository, event) => (email, password) => {
-    if (!(new Email(email)).isValid() && isEmpty(password)) {
+    if (!isValidEmail(email) && isEmpty(password)) {
         event.emit(ERROR, error.loginValidation());
         return;
     }

@@ -1,7 +1,6 @@
 'use strict';
 
-
-const PATTERN = /^(\d|\w|\.|-|_)+\@[a-z0-9]+\.[a-z]+(\.[a-z]+)?$/;
+const {isValidEmail} = require('../common/validation');
 
 class Email {
     constructor(email) {
@@ -9,10 +8,7 @@ class Email {
     }
 
     isValid() {
-        return this.email !== null
-            && this.email !== undefined
-            && this.email !== ''
-            && PATTERN.test(this.email);
+        return isValidEmail(this.email);
     }
 }
 
