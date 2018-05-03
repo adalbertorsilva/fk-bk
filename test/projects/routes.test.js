@@ -9,11 +9,10 @@ const testCase = require('../test-case');
 let projects;
 let token;
 
-beforeAll(() => {
-    return testCase.init().then(() => {
-        return testCase.makeJwtToken()
-                .then((jwtToken) => token = jwtToken);
-    });
+beforeAll(async () => {
+    await testCase.init();
+    token = await testCase.makeJwtToken();
+    console.log(token);
 });
 
 beforeEach(async () => {
