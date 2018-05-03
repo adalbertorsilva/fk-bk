@@ -9,7 +9,7 @@
   "scripts": {
     "start": "node ./src/server.js",
     "test-cvg": "NODE_ENV=test ./node_modules/.bin/jest -i --coverage",
-    "test": "NODE_ENV=test ./node_modules/.bin/jest"
+    "test": "NODE_ENV=test ./node_modules/.bin/jest -i"
   },
   "repository": {
     "type": "git",
