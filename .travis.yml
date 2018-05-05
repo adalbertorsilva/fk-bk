@@ -23,7 +23,7 @@ before_install:
   - npm install codeclimate-test-reporter istanbul -g
   - docker-compose build
 
-script: docker-compose run --rm app npm run test:coverage
+script: docker-compose run --rm app npm run test:ci
 
 after_script:
   - codeclimate-test-reporter < ./coverage/lcov.info
