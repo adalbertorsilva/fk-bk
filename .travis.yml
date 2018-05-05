@@ -1,14 +1,27 @@
-language: node_js
-node_js:
-  - "9.5.0"
-addons:
-  code_climate:
-      repo_token:
-        secure: "x3AEBcP7huP4Nmytws956WXJOe1DCOpV8aVVukeI/Yydm6IHaiZhCodPRFumTbxwDU1wmeg+Vb2W1A45LUegrFQg07a9wJPiezVjtiIAeY+AXEzlfUxystY76zKSqTvmapoGtvWQaZ/l1N/Gl5ykkkJNcGN8PKKpfjlGZUsck1w9wZCp1+xT6xaiBht48qEMRqJQTL/mvDIT7RrFVHAJueCPkKRdQ3Tg8gxgcpHmg6WAQZHWOXp+jktVO+oP3FCSY548Zt+EwxTU9XBtsCQoGPNjxnJmw4fDk4JQN7pfoJP+uJkaGLQaK1LuGPb62+5PwNv/x15UPHQA8iJ/2/znICegb1MFZMZcFBqsPMfTuW1SxuOiTa0sFvMTPUliyd2Ftq6VjTv0hZW3saUZumVDXw2FSJtNSTv8zxGMWu6xp/1xPqznPkk0bKxQ+OfgqZOcvvlJKz35npam6YhjAt//b3XbJG3oUfQHFAJAojFWzM2h+nfXiLIyvbKa/jyQmOC6NG9oeohy+F2bNUjWuj/mtRDOn4lGwWViPaSifvC0PbM/i2sZqOaLZoXIjyKi12TaKImU3rP9f09wP8Vep2yAUbfoQIBcrEJVnNUbMPrU5mZvfTfnUoVujvSXEDmpi8C82m/j6XTAIMUFx3GS4zoa7Cj7Jt+5LvAPFGcBOsjhqyM="
-services: mongodb
-script: npm run test-cvg
-before_script:
-  - npm install
-  - npm install codeclimate-test-reporter istanbul -g
-after_script:
-  - codeclimate-test-reporter < ./coverage/lcov.info
+dist: trusty
+sudo: required
+
+services:
+    - docker
+
+env: 
+    global:
+        - DOCKER_VERSION=18.04.0-ce
+        - DOCKER_COMPOSE_VERSION=1.21.0
+
+before_install:
+    # list docker-engine versions
+    - apt-cache madison docker-engine
+    
+    # upgrade docker-engine to specific version
+    - sudo apt-get -o Dpkg::Options::="--force-confnew" install -y docker-engine=${DOCKER_VERSION}
+
+    # reinstall docker-compose at specific version
+    - sudo rm -f /usr/local/bin/docker-compose
+    - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+    - chmod +x docker-compose
+    - sudo mv docker-compose /usr/local/bin
+
+script:
+    - docker version
+    - docker-compose version
