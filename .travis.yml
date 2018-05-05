@@ -6,7 +6,7 @@ services:
 
 env: 
     global:
-        - DOCKER_VERSION=1.12.6~trusty
+        - DOCKER_VERSION=1.10.1-0~trusty
         - DOCKER_COMPOSE_VERSION=1.21.0
 
 before_install:
