@@ -4,33 +4,46 @@ const MongoClient = require('mongodb').MongoClient;
 const ObjectID = require('mongodb').ObjectID;
 const config = require('./config');
 
-module.exports = (() => {
-    let _db;
+let _db;
 
+function createIndexes(db) {
+    db.createIndex('users', 'email', {unique: true});
+}
+
+function connectToDb() {
+    return MongoClient.connect(config.database)
+        .then((db) => db.db())
+        .then((db) => {
+            _db = db;
+            createIndexes(db);
+        }).catch((err) => console.error('Error at connected to database'));
+}
+
+function getConnection() {
+    return _db;
+}
+
+function closeConnection() {
+    return _db.close();
+}
+
+function makeObjectId(id) {
+    return new ObjectID(id);
+}
+
+function getCollection(name) {
+    return _db.collection(name);
+}
+
+module.exports = (() => {
     return {
-        connect: async (callback) => {
-            try {
-                const db = await MongoClient.connect(config.database);
-                _db = db.db();
-                if (callback) {
-                    callback();
-                }
-                return _db;
-            } catch (err) {
-                throw new Error('Error at connected to database');
-            }
-        },
-        connection: () => {
-            return _db;
-        },
-        close: () => {
-            _db.close();
-        },
-        objectId: (id) => {
-            return new ObjectID(id);
-        },
-        collection: (name) => {
-            return _db.collection(name);
-        },
+        connect: connectToDb,
+        connection: getConnection,
+        collection: getCollection,
+        close: closeConnection,
+        objectId: makeObjectId,
+        collection: getCollection,
     };
 })();
+
+

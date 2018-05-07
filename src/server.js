@@ -9,6 +9,4 @@ const port = process.env.PORT || config.port;
 app.listen(port);
 console.log('Listening app to http://localhost:' + port);
 
-database.connect(() => {
-    console.log('connect to database');
-});
+database.connect().then(() => console.log('connect to database'));

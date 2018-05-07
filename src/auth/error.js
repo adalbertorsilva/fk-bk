@@ -1,9 +1,9 @@
 module.exports = {
     register: () => {
         return {
-            code: 500,
-            error: 'Server Error',
-            message: 'Error to register user',
+            code: 400,
+            error: 'Bad Request',
+            message: 'Error to register user, email should be unique',
         };
     },
 

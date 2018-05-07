@@ -5,9 +5,17 @@ const EMAIL_PATTERN = /^(\d|\w|\.|-|_)+\@[a-z0-9]+\.[a-z]+(\.[a-z]+)?$/;
 const request = require('supertest');
 const testCase = require('../test-case');
 const app = require('../../src/app');
+let users;
+
+const USER = {
+    username: 'foo bar',
+    email: 'foo@bar.com',
+    password: 'secret_key',
+};
 
 beforeAll(async () => {
     await testCase.init();
+    users = testCase.makeModel('users');
 });
 
 beforeEach(async () => {
@@ -17,11 +25,7 @@ beforeEach(async () => {
 test('#POST create a new user', () => {
     return request(app.callback())
         .post('/register')
-        .send({
-            username: 'foo bar',
-            email: 'foo@bar.com',
-            password: 'secret_key',
-        })
+        .send(USER)
         .then((res) => {
             expect(res.status).toBe(201);
             expect(res.type).toBe('application/json');
@@ -51,6 +55,22 @@ test('#POST invalid user should return error validation', () => {
         });
 });
 
+test('#POST the email do not should repeat', () => {
+    return users.insertOne(USER).then(() => {
+        return request(app.callback())
+            .post('/register')
+            .send(USER)
+            .then((res) => {
+                expect(res.status).toBe(400);
+                expect(res.type).toBe('application/json');
+                expect(res.body).toHaveProperty('code', 400);
+                expect(res.body).toHaveProperty('error', 'Bad Request');
+                expect(res.body).toHaveProperty('message',
+                    'Error to register user, email should be unique');
+            });
+    });
+});
+
 test('#POST should return valid jwt token', () => {
     return testCase.makeJwtToken().then((jwtToken) => {
         return request(app.callback())
@@ -67,10 +87,7 @@ test('#POST should return valid jwt token', () => {
 test('#POST should return user not found', () => {
     return request(app.callback())
         .post('/login')
-        .send({
-            email: 'foo@bar.com',
-            password: 'secret_key',
-        })
+        .send(USER)
         .then((res) => {
             expect(res.status).toBe(404);
             expect(res.type).toBe('application/json');
