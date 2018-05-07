@@ -1,6 +1,6 @@
 const jwt = require('jwt-simple');
-const config = require('../src/config');
-const database = require('../src/database');
+const config = require('../src/config/config');
+const database = require('../src/db/database');
 
 const init = () => {
     return database.connect();

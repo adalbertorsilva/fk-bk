@@ -1,6 +1,6 @@
 'use strict';
 
-const db = require('../database');
+const db = require('../db/database');
 
 const PATTERN = /^((\d|\w)+\/)+$/;
 

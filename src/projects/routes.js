@@ -1,6 +1,6 @@
 const Router = require('koa-router');
 const EventEmitter = require('events').EventEmitter;
-const database = require('../database');
+const database = require('../db/database');
 const repository = require('./repository')(database);
 const {all, create, update, get, del} = require('./services');
 const [SUCCESS, ERROR] = ['SUCCESS', 'ERROR', 'NOT_FOUND'];

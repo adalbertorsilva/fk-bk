@@ -2,13 +2,10 @@
 
 const MongoClient = require('mongodb').MongoClient;
 const ObjectID = require('mongodb').ObjectID;
-const config = require('./config');
+const config = require('../config/config');
+const createIndexes = require('./indexes');
 
 let _db;
-
-function createIndexes(db) {
-    db.createIndex('users', 'email', {unique: true});
-}
 
 function connectToDb() {
     return MongoClient.connect(config.database)

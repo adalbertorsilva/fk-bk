@@ -1,8 +1,8 @@
 const passport = require('koa-passport');
 const {Strategy, ExtractJwt} = require('passport-jwt');
-const config = require('./config');
-const database = require('./database');
-const repository = require('./auth/repository')(database);
+const config = require('../config/config');
+const database = require('../db/database');
+const repository = require('./repository')(database);
 
 module.exports = (() => {
     const options = {

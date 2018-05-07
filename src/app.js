@@ -5,7 +5,7 @@ const bodyParser = require('koa-bodyparser');
 const projects = require('./projects/routes');
 const user = require('./auth/routes');
 const cors = require('koa2-cors');
-const auth = require('./auth');
+const auth = require('./auth/auth');
 
 const app = new Koa();
 
