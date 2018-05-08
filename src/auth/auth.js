@@ -2,7 +2,7 @@ const passport = require('koa-passport');
 const {Strategy, ExtractJwt} = require('passport-jwt');
 const config = require('../config/config');
 const database = require('../db/database');
-const repository = require('./repository')(database);
+const repository = require('../common/repository')('users', database);
 
 module.exports = (() => {
     const options = {
@@ -11,7 +11,7 @@ module.exports = (() => {
     };
 
     const jwtStrategy = new Strategy(options, (payload, done) => {
-        repository.one(payload._id)
+        repository.findOne(payload._id)
             .then((user) => {
                 if (user) {
                     return done(null, {

@@ -1,9 +1,9 @@
 'use strict';
 
-const Entity = require('../common/entity');
-const Timestamp = require('../common/timestamp');
-const BaseUrl = require('../common/base-url');
-const {isNotEmpty} = require('../common/validation');
+const Entity = require('../../common/entity');
+const Timestamp = require('../../common/timestamp');
+const BaseUrl = require('../base-url');
+const {isNotEmpty} = require('../../common/validation');
 
 class Project extends Entity {
     constructor({_id, name, baseUrl}, timestamp = new Timestamp()) {

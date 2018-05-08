@@ -2,7 +2,7 @@
 
 const Entity = require('../common/entity');
 const Timestamp = require('../common/timestamp');
-const Email = require('../common/email');
+const Email = require('./email');
 const {isNotEmpty} = require('../common/validation');
 
 class User extends Entity {

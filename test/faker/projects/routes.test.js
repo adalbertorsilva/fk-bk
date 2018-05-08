@@ -3,8 +3,8 @@
 const NOT_FOUND_ID = 123453123451;
 
 const request = require('supertest');
-const app = require('../../src/app');
-const testCase = require('../test-case');
+const app = require('../../../src/app');
+const testCase = require('../../test-case');
 
 let projects;
 let token;

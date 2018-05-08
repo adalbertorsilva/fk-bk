@@ -1,7 +1,8 @@
 const Router = require('koa-router');
 const EventEmitter = require('events').EventEmitter;
 const database = require('../db/database');
-const repository = require('./repository')(database);
+const repository = require('../common/repository')('users', database);
+const userRepository = require('./repository')(database);
 const {register, login} = require('./services');
 const [SUCCESS, ERROR] = ['SUCCESS', 'ERROR'];
 const router = new Router();
@@ -26,7 +27,7 @@ router
     })
     .post('/login', async (ctx, next) => {
         const event = new EventEmitter();
-        const loginUserBy = login(repository, event);
+        const loginUserBy = login(userRepository, event);
 
         event.on(SUCCESS, (token) =>{
             ctx.status = 200;

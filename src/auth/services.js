@@ -2,8 +2,9 @@
 const jwt = require('jwt-simple');
 const config = require('../config/config');
 const User = require('./user');
-const {isEmpty, isValidEmail} = require('../common/validation');
 const error = require('./error');
+const schema = require('./schema');
+const {isEmpty, isValidEmail} = require('../common/validation');
 const [SUCCESS, ERROR] = ['SUCCESS', 'ERROR'];
 
 const register = (repository, event) => (data) => {
@@ -13,7 +14,7 @@ const register = (repository, event) => (data) => {
         return;
     }
 
-    return repository.add(user)
+    return repository.create(user, schema)
         .then((user) => {
             event.emit(SUCCESS, user);
         })

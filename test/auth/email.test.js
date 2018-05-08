@@ -1,4 +1,4 @@
-const Email = require('../../src/common/email');
+const Email = require('../../src/auth/email');
 
 describe('isValid', () => {
     test('should return true if is valid email', () => {

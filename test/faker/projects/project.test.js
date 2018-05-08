@@ -1,4 +1,4 @@
-const Project = require('../../src/projects/project');
+const Project = require('../../../src/faker/projects/project');
 
 describe('isValid', () => {
     test('should return false if is invalid project', () => {

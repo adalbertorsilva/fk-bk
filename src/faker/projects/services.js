@@ -1,10 +1,11 @@
 'use strict';
 const Project = require('./project');
-const [SUCCESS, ERROR] = ['SUCCESS', 'ERROR'];
 const error = require('./error');
+const schema = require('./schema');
+const [SUCCESS, ERROR] = ['SUCCESS', 'ERROR'];
 
 const all = (repository, event) => () => {
-    return repository.all()
+    return repository.findAll({name: 1})
         .then((projects) => {
             event.emit(SUCCESS, projects);
         })
@@ -20,7 +21,7 @@ const create = (repository, event) => (data) => {
         return;
     }
 
-    return repository.add(project)
+    return repository.create(project, schema)
         .then((project) => {
             event.emit(SUCCESS, project);
         })
@@ -37,7 +38,7 @@ const update = (repository, event) => (id, data) => {
     }
 
     project.renewUpdatedAt();
-    return repository.update(id, project)
+    return repository.update(id, project, schema)
         .then((project) => {
             if (project == null) {
                 event.emit(ERROR, error.notFound(id));
@@ -51,7 +52,7 @@ const update = (repository, event) => (id, data) => {
 };
 
 const get = (repository, event) => (id) => {
-    return repository.one(id)
+    return repository.findOne(id)
         .then((project) => {
             if (project == null) {
                 event.emit(ERROR, error.notFound(id));
@@ -65,7 +66,7 @@ const get = (repository, event) => (id) => {
 };
 
 const del = (repository, event) => (id) => {
-    return repository.del(id)
+    return repository.remove(id)
         .then((success) => {
             if (!success) {
                 event.emit(ERROR, error.notFound(id));

@@ -1,4 +1,4 @@
-const BaseUrl = require('../../src/common/base-url');
+const BaseUrl = require('../../src/faker/base-url');
 
 describe('isValid', () => {
     test('should return true if is valid base url', () => {

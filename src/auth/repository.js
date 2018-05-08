@@ -1,32 +1,17 @@
 'use strict';
 
-module.exports = (db) => {
-    function toDatabase(user) {
-        return {
-            username: user.username,
-            email: user.email.email,
-            password: user.password,
-            timestamp: user.timestamp,
-        };
-    }
+const USERS = 'users';
+
+const repository = (db) => {
+    const findByEmailAndPassword = (email, password) => {
+        return db
+            .collection(USERS)
+            .findOne({email: email, password: password});
+    };
 
     return {
-        add: (user) => {
-            delete user._id;
-            return db
-                .collection('users')
-                .insertOne(toDatabase(user))
-                .then((response) => response.ops[0]);
-        },
-        one: (id) => {
-            return db
-                .collection('users')
-                .findOne({_id: db.objectId(id)});
-        },
-        findByEmailAndPassword: (email, password) => {
-            return db
-                .collection('users')
-                .findOne({email: email, password: password});
-        },
+        findByEmailAndPassword: findByEmailAndPassword,
     };
 };
+
+module.exports = repository;
