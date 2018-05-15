@@ -13,7 +13,7 @@ function connectToDb() {
         .then((db) => {
             _db = db;
             createIndexes(db);
-        }).catch((err) => console.error('Error at connected to database'));
+        }).catch((err) => console.error('Error at connected to database', err));
 }
 
 function getConnection() {
